@@ -117,6 +117,8 @@ func NewCommand(cfg ConfigCommand) (cmd Command) {
 		cmd = &CommandImport{CommandBase{cfg}}
 	case "arg":
 		cmd = &CommandArg{CommandBase{cfg}}
+	case "drop_cache":
+		cmd = &CommandDropCache{CommandBase{cfg}}
 	default:
 		panic(fmt.Sprintf("Unknown command: %s", cfg.name))
 	}
@@ -367,6 +369,17 @@ func (c *CommandCommit) Execute(b *Build) (s State, err error) {
 	b.VirtualSize = s.Size
 
 	return s, nil
+}
+
+// CommandDropCache implements DROP_CACHE
+type CommandDropCache struct {
+	CommandBase
+}
+
+// Execute runs the command
+func (c *CommandDropCache) Execute(b *Build) (s State, err error) {
+	b.cfg.ReloadCache = true
+	return b.state, nil
 }
 
 // CommandRun implements RUN
